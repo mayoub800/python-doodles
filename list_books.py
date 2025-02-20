@@ -54,7 +54,7 @@ def main():
     Main function to get user input (multiple directories using '|' delimiter),
     process them, and export to CSV files.
     """
-    root_directories_input = input("Enter the full paths to the directories, separated by '|': ") # Updated input prompt - using '|' as delimiter
+    root_directories_input = input("Enter the full paths to the directories, separated by '|': ") # Updated input prompt - using '|' as delimiter because commas where an issue for folders with commas, maybe there is a better way of doing this?
     root_directories = [path.strip() for path in root_directories_input.split("|")] # Split by '|'
 
     # Get filename choice ONCE at the beginning
@@ -78,7 +78,7 @@ def main():
         df_result = list_books_in_directory(root_directory)
 
         if df_result is not None:
-            # --- COMMENTED OUT TABLE PRINTING ---
+            # --- COMMENTED OUT TABLE PRINTING ON THE COMMAND LINE (TOO MESSY) ---
             # print(f"\nList of PDF and EPUB files in '{root_directory}':")
             # print(df_result.to_string(index=False))
 
