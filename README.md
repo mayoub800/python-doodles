@@ -48,10 +48,10 @@ pip install pandas
 
 Run the script from your terminal:
 
-python library_indexer.py
+python list_books.py
 
 
-(Note: Replace library_indexer.py with whatever you named your script)
+(Note: Replace list_books.py with whatever you named your script)
 
 Enter directory paths:
 When prompted, paste the full paths to the directories you want to scan. If scanning multiple locations, separate them with a pipe | character.
