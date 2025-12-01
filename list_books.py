@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import uuid
 
 def list_books_in_directory(root_dir):
     """
@@ -19,6 +18,9 @@ def list_books_in_directory(root_dir):
 
     data = []  # List to store file information
 
+    # REVERTED TO os.walk
+    # os.walk is recursive (goes into subfolders) and returns the 3 items 
+    # (dirpath, dirnames, filenames) that your logic relies on.
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # Extract the subfolder name relative to the root directory
         subfolder = os.path.relpath(dirpath, root_dir)
@@ -28,15 +30,21 @@ def list_books_in_directory(root_dir):
         for filename in filenames:
             if filename.lower().endswith(('.pdf', '.epub', '.doc', '.txt', '.djvu', '.cbz', '.cbr')):
                 filepath = os.path.join(dirpath, filename)
-                filesize_bytes = os.path.getsize(filepath)
-                filesize_mb = filesize_bytes / (1024 * 1024)  # convert to MB
+                
+                # Check if file exists to avoid errors with broken symlinks or permissions
+                try:
+                    filesize_bytes = os.path.getsize(filepath)
+                    filesize_mb = filesize_bytes / (1024 * 1024)  # convert to MB
 
-                data.append({
-                    'Subfolder': subfolder,
-                    'Filename': filename,
-                    'Filepath': filepath,
-                    'Filesize (MB)': f"{filesize_mb:.2f}"  # format to 2 decimal places
-                })
+                    data.append({
+                        'Subfolder': subfolder,
+                        'Filename': filename,
+                        'Filepath': filepath,
+                        'Filesize (MB)': f"{filesize_mb:.2f}"  # format to 2 decimal places
+                    })
+                except OSError as e:
+                    print(f"Skipping file due to error: {filepath} ({e})")
+                    continue
 
     if not data:
         print(f"No ebook files found in '{root_dir}' or its subdirectories.")
@@ -60,12 +68,8 @@ def main():
         df_result = list_books_in_directory(root_directory)
 
         if df_result is not None:
-            # --- COMMENTED OUT TABLE PRINTING ---
-            # print(f"\nList of PDF and EPUB files in '{root_directory}':")
-            # print(df_result.to_string(index=False))
-
             # Extract the folder name from the path
-            folder_name = os.path.basename(root_directory)
+            folder_name = os.path.basename(os.path.normpath(root_directory)) # normpath handles trailing slashes correctly
             output_filename = f"{folder_name}.csv"
 
             df_result.to_csv(output_filename, index=False)
